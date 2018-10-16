@@ -1,0 +1,28 @@
+	.jtk-demo-main {
+		margin-top: 0;
+		margin-left: 10px;
+		width: 1155px;
+		float: left;
+	}
+	
+	.flowchart-demo .window {
+		width: 150px;
+		height: 150px;
+	}
+
+	.flowchart-demo .window img.scene-button{
+		position: absolute;
+		cursor: pointer;
+	}
+	.flowchart-demo .window img.scene-delete{
+		bottom: 15px;
+		right: 5px;
+	}
+	.flowchart-demo .window img.scene-edit{
+		bottom: 15px;
+		right: 40px;
+	}
+	
+	.flowchart-demo .window.jtk-draggable {
+		cursor: move;
+	}
