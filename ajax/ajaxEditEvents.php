@@ -5,16 +5,15 @@
 	$returnVal = array();
 
 	// is user logged in
+	/*
 	if(adminClass::isUserLoggedIn() === FALSE) {
 		$returnVal['status'] = AJAX_STATUS_LOGIN_FAIL;
 		echo json_encode($returnVal);
 		exit();
 	}
-	
+	*/
 	$jsonCategories = dbClass::valuesFromPost('e');
-	$categories = json_decode(str_replace('\\', '', $jsonCategories), TRUE);
-	
-	// generate edit event table
+	$eventList = json_decode(str_replace('\\', '', $jsonCategories), TRUE); // generate edit event table
 	$content = '
 		<h1 id="modal-title">Edit Categories and Events</h1>
 
@@ -28,23 +27,15 @@
 					<th class="col-priority">Priority</th>
 				</tr>
 				<tr><th colspan="5"><hr class="modal-divider clearer" /></th></tr>
-				<tr>
-					<td class="col-delete"></td>
-					<td class="col-category"><input class="data-category new" type="text" data-cat="" value="" placeholder="Add new category"></td>
-					<td class="col-delete"></td>
-					<td class="col-event"></td>
-					<td class="col-priority"></td>
-				</tr>
-				<tr><td colspan="5"><hr class="modal-divider clearer" /></td></tr>
 	';
 	
 	// get categories
-	if(count($categories) > 0) {
-		foreach($categories as $category => $events) {
+	if(count($eventList) > 0) {
+		foreach($eventList as $category => $events) {
 			$content .= '
 				<tr>
-					<td class="col-delete"><a href="javascript: void(2);" onclick="editor.deleteCategory(\'' . $category . '\'); return false;"><img src="' . BROWSER_IMAGES . 'delete.png"></a></td>
-					<td class="col-category"><input class="data-category" type="text" data-cat="' . $category . '" value="' . $category . '"></td>
+					<td class="col-delete"><a href="javascript: void(2);" onclick="modal.deleteEventCat(\'' .  $category . '\')"><img src="' . BROWSER_IMAGES . 'delete.png"></a></td>
+					<td class="col-category"><input class="data-category" type="text" data-cat="' . $category . '" value="' . $events['title'] . '" onchange="modal.updateEventCat(this)"></td>
 					<td class="col-delete"></td>
 					<td class="col-event"></td>
 					<td class="col-priority"></td>
@@ -53,35 +44,57 @@
 			';
 			
 			// get events
-			if(count($events) > 0) {
-				foreach($events as $event => $metaData) {
-					$checkedContent = ($metaData['priority'] == 1) ? ' checked="checked" ' : '';
-					
+			if(count($events['event']) > 0) {
+				foreach($events['event'] as $event => $eventData) {
+					$checkedContent = ($eventData['priority'] == 1) ? ' checked="checked" ' : '';					
 					$content .= '
 						<tr>
 							<td class="col-delete"></d>
 							<td class="col-category"></td>
-							<td class="col-delete"><a href="javascript: void(2);" onclick="editor.deleteEvent(\'' .  $category . '\', \'' . $event . '\'); return false;"><img src="' . BROWSER_IMAGES . 'delete.png"></a></td>
-							<td class="col-event"><input class="data-event" type="text" data-cat="' . $category . '" data-event-tag="' . $event . '" value="' . $metaData['title'] . '"></td>
-							<td class="col-priority"><input type="checkbox" data-cat="' . $category . '" data-event-tag="' . $event . '"' . $checkedContent . '></td>
+							<td class="col-delete"><a href="javascript: void(2);" onclick="modal.deleteEvent(\'' .  $category . '\', \'' . $event . '\')"><img src="' . BROWSER_IMAGES . 'delete.png"></a></td>
+							<td class="col-event"><input class="data-event" type="text" data-cat="' . $category . '" data-event-tag="' . $event . '" value="' . $eventData['title'] . '" onchange="modal.updateEventName(this)"></td>
+							<td class="col-priority"><input type="checkbox" data-cat="' . $category . '" data-event-tag="' . $event . '"' . $checkedContent . ' onclick="modal.updateEventPriority(this)"></td>
 						</tr>
 					';
 				}
+			} else {
+				$content .= '
+					<tr>
+						<td class="col-delete"></td>
+						<td class="col-category"></td>
+						<td class="col-delete"></td>
+						<td class="col-event"><input class="data-event new-event" type="text" data-cat="' . $category . '" data-event="" value="" placeholder="Add new event" onchange="modal.updateEventName(this)"></td>
+						<td class="col-priority"><input type="checkbox" disabled></td>
+					</tr>
+				';
 			}
 			
 			// add new event
 			$content .= '
-				<tr>
-					<td class="col-delete"></td>
-					<td class="col-category"></td>
-					<td class="col-delete"></td>
-					<td class="col-event"><input class="data-event new-event" type="text" data-cat="' . $category . '" data-event="" value="" placeholder="Add new event"></td>
-					<td class="col-priority"></td>
-				</tr>
+				<tr><td colspan="5"><button class="red-button modal-button" data-cat="' . $category . '" onclick="modal.addEvent(this)">Add Event</button></td></tr>
 				<tr><td colspan="5"><hr class="modal-divider clearer" /></td></tr>
 			';
 		
 		}
+	} else {
+		$content .= '
+			<tr>
+				<td class="col-delete"></td>
+				<td class="col-category"><input class="data-category new" type="text" data-cat="" value="" placeholder="Add new category" onchange="modal.updateEventCat(this)"></td>
+				<td class="col-delete"></td>
+				<td class="col-event"></td>
+				<td class="col-priority"></td>
+			</tr>
+			<tr>
+				<td class="col-delete"></td>
+				<td class="col-category"></td>
+				<td class="col-delete"></td>
+				<td class="col-event"><input class="data-event new-event" type="text" data-cat="" data-event="" value="" placeholder="Add new event" onchange="modal.updateEventName(this)"></td>
+				<td class="col-priority"><input type="checkbox" disabled></td>
+			</tr>
+			<tr><td colspan="5"><button class="red-button modal-button" data-cat="" onclick="modal.addEvent(this)">Add Event</button></td></tr>
+			<tr><td colspan="5"><hr class="modal-divider clearer" /></td></tr>
+		';
 	}
 
 	$content .= '
@@ -89,7 +102,8 @@
 		</div>		
 
 		<div class="control-modal-div">
-			<button class="red-button modal-button edit-done">Done</button>
+			<button class="red-button modal-button add-cat">Add Category</button>
+			<button class="red-button modal-button edit-done">Save</button>
 		</div>
 	';
 
