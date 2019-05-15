@@ -10,9 +10,19 @@
 				return FALSE;
 			} else {
 				$simpleXMLObj = simplexml_load_file($filePath);
-				return json_decode(json_encode($simpleXMLObj), TRUE);
+				return json_decode(json_encode($simpleXMLObj), TRUE); // TRUE: return as array
 			}
 		}
+
+		/*static public function getScenarioObj($fileName) {
+			$filePath = SERVER_SCENARIOS . $fileName . ".xml";
+			if(file_exists($filePath) === FALSE) {
+				return FALSE;
+			} else {
+				$simpleXMLObj = simplexml_load_file($filePath);
+				return $simpleXMLObj; 
+			}
+		}*/
 		
 		static public function getScenarioProfileArray($fileName) {
 			$scenarioArray = self::getScenarioArray($fileName);

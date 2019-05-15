@@ -194,19 +194,20 @@
 		
 		// sanitize functions
 		public static function valuesFromPost($varName) {
-			$connection = self::dbConnect(DB_DEFAULT);
+			//$connection = self::dbConnect(DB_DEFAULT);
 			$tempString = "";
 
 			if(isset($_POST[$varName])){
 				if (get_magic_quotes_gpc() == false) {
-					$tempString = mysqli_real_escape_string($connection, $_POST[$varName]);
+					//$tempString = mysqli_real_escape_string($connection, $_POST[$varName]);
+					$tempString = $_POST[$varName];
 				} else {
 					$tempString = $_POST[$varName];
 				}
 			} else {
 				$tempString = "";
 			}
-			self::dbClose($connection);
+			//self::dbClose($connection);
 			return $tempString;
 		}
 		
