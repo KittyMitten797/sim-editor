@@ -86,6 +86,36 @@ var scene = {
 									'<img title="Delete Scene" class="scene-delete scene-button" src="' + BROWSER_IMAGES + 'delete.png" onclick="scene.deleteScene(\'' + sceneID + '\');" />' + 
 									'<img title="Edit Scene" class="scene-edit scene-button" src="' + BROWSER_IMAGES + 'edit.png" onclick="scene.editScene(\'' + sceneID + '\');" />' + 
 								'</div>');
+		// Generate xml for the new scene			
+			scenario = xml.getElementsByTagName("scenario")[0];
+			newScene = xml.createElement("scene");
+
+			title = xml.createElement("title");
+			titleText = xml.createTextNode(this.currentSceneTitle);
+			title.appendChild(titleText);
+			crlf1 = xml.createTextNode("\r\n\t\t");
+			newScene.appendChild(crlf1);
+			newScene.appendChild(title);
+
+			id = xml.createElement("id");
+			idText = xml.createTextNode(parseInt(this.lastSceneID)+1);
+			id.appendChild(idText);
+			crlf2 = xml.createTextNode("\r\n\t\t");
+			newScene.appendChild(crlf2);
+			newScene.appendChild(id);
+
+			initialCondition = xml.createElement("init");
+			crlf3 = xml.createTextNode("\r\n\t\t");
+			newScene.appendChild(crlf3);
+			newScene.appendChild(initialCondition);
+			crlf4 = xml.createTextNode("\r\n\t");
+			newScene.appendChild(crlf4);
+			
+			crlf5 = xml.createTextNode("\t");
+			scenario.appendChild(crlf5);
+			scenario.appendChild(newScene);
+			crlf6 = xml.createTextNode("\r\n");
+			scenario.appendChild(crlf6);
 		}
 		
 		// position new div
@@ -99,7 +129,7 @@ var scene = {
 		scene.sceneRecords[scene.lastSceneID].id = scene.lastSceneID;
 		scene.sceneRecords[scene.lastSceneID].title = scene.currentSceneTitle;
 		
-		// track whch endpoints have been used
+		// track which endpoints have been used
 		scene.sceneRecords[scene.lastSceneID].sources = [false, false, false, false, false, false, false, false, false];
 		
 		// register new scene with jsPlumb
@@ -116,26 +146,24 @@ var scene = {
 			// set draggable
 			window.jsp.draggable(jsPlumb.getSelector("#" + sceneID), { grid: [20, 20], cursor: "crosshair" });
 		
-			//
 			// listen for clicks on connections, and offer to delete connections on click.
-			//
 			window.jsp.bind("click", function (conn, originalEvent) {
-console.log(conn.getOverlay("label").getLabel());
-console.log(conn.getParameters());
+//console.log(conn.getOverlay("label").getLabel());
+//console.log(conn.getParameters());
 			});
 
 			// add endpoint click
 			window.jsp.bind("endpointClick", function(endpoint, originalEvent) {
 alert("Endpoint clicked!");
-console.log(endpoint.getParameters());
-console.log(endpoint.getUuid());
+//console.log(endpoint.getParameters());
+//console.log(endpoint.getUuid());
 			});
         
 			// listen for new connections; initialise them the same way we initialise the connections at startup.
 			window.jsp.bind("connection", function (connInfo, originalEvent) {
 				initConnectionLabel(connInfo.connection);
-console.log('connInfo:');
-console.log(connInfo.sourceId);
+//console.log('connInfo:');
+//console.log(connInfo.sourceId);
 				var _thisSceneID = connInfo.sourceId.split('-').pop();
 				scene.addSourceEndPoint(_thisSceneID);				
 			});
@@ -184,11 +212,11 @@ console.log(connInfo.sourceEndpoint.getParameter('source'));
 											"sourceIndex": i
 											}
 		});
-console.log('addSourceEndpoint: ');
+// console.log('addSourceEndpoint: ');
 var endpointObj = window.jsp.getEndpoints($('#scene-' + sceneID));
-console.log(endpointObj.length);
-console.log(endpointObj);
-console.log(window.jsp.getConnections($('#scene-' + sceneID)));
+// console.log(endpointObj.length);
+// console.log(endpointObj);
+// console.log(window.jsp.getConnections($('#scene-' + sceneID)));
 
 	},
 	
@@ -219,11 +247,16 @@ console.log(window.jsp.getConnections($('#scene-' + sceneID)));
 	},
 	
 	editScene: function(sceneID) {
+		/*
 		$('#test-params').position({
 			my: "right",
 			at: "right",
 			of: $('#' + sceneID)
 		});
+		*/
+		sId = sceneID.split('-');
+		sceneID = parseInt(sId[1]) + 1;
+		modal.editScenes(sceneID);
 	}
 };
 
@@ -272,7 +305,10 @@ jsPlumb.ready(function () {
                 id: "label",
                 cssClass: "aLabel",
                 events:{
-                    click:function() { alert("hey"); }
+                    click:function() { 
+                    	triggerID=$(this).attr('label');
+                    	modal.editTriggers(triggerID); 
+                    }
                 }
             }]
         ],
