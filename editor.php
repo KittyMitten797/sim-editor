@@ -2,6 +2,7 @@
 	require_once('init.php');
 	
 	// delete session data
+	/*
 	$status = adminClass::isUserLoggedIn();
 	if($status === FALSE) {
 		header('location: index.php');
@@ -9,7 +10,7 @@
 	
 	$userRow = adminClass::getUserRowFromSession();
 	$userName = $userRow['UserFirstName'] . " " . $userRow['UserLastName'];
-	
+	*/
 	// get scenario list
 	$scenarioList = scandir(SERVER_SCENARIOS);
 	$scenarioContent = '';
